@@ -240,6 +240,15 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 {
     int i,j;
 
+    // prob,left,right,top,bot,label
+    FILE *out_fd = fopen("prediction_details.csv", "w");
+
+    if (out_fd == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
         int class = -1;
@@ -289,6 +298,8 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             if(right > im.w-1) right = im.w-1;
             if(top < 0) top = 0;
             if(bot > im.h-1) bot = im.h-1;
+
+            fprintf(out_fd, "%f,%d,%d,%d,%d,%s\n", dets[i].prob[class], left, right, top, bot, names[class]);
 
             draw_box_width(im, left, top, right, bot, width, red, green, blue);
             if (alphabet) {
